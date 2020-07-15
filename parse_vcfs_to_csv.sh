@@ -9,8 +9,8 @@ module "add" "apps/virtualenv/16.0.0/python-2.7.8"
 # assign variables
 filtered_vcf_format1=".filtered1.vcf"
 parse_log_format=".filtered1.parse.log"
-#test_data_dir="/users/tz1/GATK_Mutect2/test_data"
-data_dir="/users/tz1/GATK4_Mutect2/"
+#test_data_dir="/users/tz1/git/GATK_Mutect2/test_data"
+data_dir="/users/tz1/git/GATK4_Mutect2/"
 script=$data_dir"variants_from_Mutect2.py"
 #echo $script
 

@@ -1,11 +1,11 @@
-## GATK4 Mutect2 Variant Calling
+## GATK4 Mutect2/HaplotypeCaller Variant Calling
   - By Tengyue Zheng
   - 24/01/2020
   email: tengyue.zheng@mft.nhs.uk
 
 ## Description
   
-  Generate GATK4 Mutect2 VCF files for all BAM files in a given directory
+  Generate GATK4 Mutect2 /HaplotypeCaller VCF files for all BAM files in a given directory
 
 ## Getting Started
 
@@ -33,42 +33,47 @@
   - ucsc.hg19.HODS.dict
   - af-only-gnomad.raw.sites.hg19.vcf.gz
   - hotspot_region_Ion_AmpliSeq_CHPv2_Somatic_Hotspots_GATK4_formatted3_output.interval_list
+  - mnt/lustre/references/hg19/hg19_validated.fa
+  - /mnt/lustre/references/targetedReseq/Cardiac/ALL/current/ALL.inhouse.bed (this is for Cardiac samples, please change this to bed files for other projects as appropriate)
 
 ## User Requirements:
 
-  1. Generate VCF files using GATK4 and use FilterMutectCalls to remove variants of low quality or low likelihood of being somatic variants
+  1. Generate VCF files using GATK4 Mutect2 and use FilterMutectCalls to remove variants of low quality or low likelihood of being somatic variants
+  2. Generate VCF files using GATK4 HaplotypeCaller
 
 ## Instructions:
+
+  1. Generate Mutect2 VCFs and CSVs from the VCFs
   
-  2. Load dependencies
+  1.1 Load dependencies
 
   ```Bash
-  cd /users/tz1/GATK4_Mutect2/
+  cd /users/tz1/git/GATK4/
 
   module add apps/virtualenv/16.0.0/python-2.7.8
   
   source venv/bin/activate
   ``` 
-  3. Test following script on a test bam file
+  1.2 Test following script on a test bam file
 
   ```Bash
   nano GATK4_mutect2_variant_calling.sh
   ```
-  uncomment /users/tz1/GATK_Mutect2/test_data/
+  uncomment /users/tz1/git/GATK4/test_data/
 
   ```Bash
   sh GATK_mutect2_variant_calling.sh
   ```
-  4. Check the VCF files generated
+  1.3 Check the VCF files generated
   
   If the VCF files have the correct format and content, then perform the same step as step3, EXCEPT uncomment data_dir="/users/tz1/GATK_Mutect2/"
 
-  5. Check the output, it should display the information on terminal:
+  1.4 Check the output, it should display the information on terminal:
 
   ```Bash
   Using GATK jar /users/tz1/apps/GATK4/gatk-4.1.4.1/gatk-package-4.1.4.1-local.jar
   Running:
-      java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /users/tz1/apps/GATK4/gatk-4.1.4.1/gatk-package-4.1.4.1-local.jar Mutect2 -R /users/tz1/GATK4_Mutect2/refs/ucsc.hg19.HODS.fasta -L chr1 -L chr2 -L chr3 -L chr4 -L chr5 -L chr7 -L chr9 -L chr10 -L chr11 -L chr12 -L chr13 -L chr14 -L chr15 -L chr16 -L chr17 -L chr18 -L chr19 -L chr20 -I /users/tz1/GATK4_Mutect2/test_data/test.bam -O /users/tz1/GATK4_Mutect2/test_data/test.unfiltered.vcf.gz
+      java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /users/tz1/apps/GATK4/gatk-4.1.4.1/gatk-package-4.1.4.1-local.jar Mutect2 -R /users/tz1/git/GATK4/refs/ucsc.hg19.HODS.fasta -L chr1 -L chr2 -L chr3 -L chr4 -L chr5 -L chr7 -L chr9 -L chr10 -L chr11 -L chr12 -L chr13 -L chr14 -L chr15 -L chr16 -L chr17 -L chr18 -L chr19 -L chr20 -I /users/tz1/git/GATK4/test_data/test.bam -O /users/tz1/git/GATK4/test_data/test.unfiltered.vcf.gz
   12:00:33.756 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/users/tz1/apps/GATK4/gatk-4.1.4.1/gatk-package-4.1.4.1-local.jar!/com/intel/gkl/native/libgkl_compression.so
   Feb 04, 2020 12:00:34 PM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
   INFO: Failed to detect whether we are running on Google Compute Engine.
@@ -176,32 +181,32 @@
   Runtime.totalMemory()=770703360
   Tool returned:
   SUCCESS
-  /users/tz1/GATK4_Mutect2/TP53/Detected/MA5245_NGS190206_198.IonXpress_009.vcf.gz created
+  /users/tz1/git/GATK4/TP53/Detected/MA5245_NGS190206_198.IonXpress_009.vcf.gz created
   ```
-  6. Test following script on a test vcf file
+  1.5 Test following script on a test vcf file
 
   ```Bash
   nano parse_vcfs_to_csv.sh
   ```
-  uncomment /users/tz1/GATK_Mutect2/test_data/
+  uncomment /users/tz1/git/GATK_Mutect2/test_data/
 
   ```Bash
   sh parse_vcfs_to_csv.sh
   ```
   
-  7. Check the output, it should display the information on terminal:
+  1.6 Check the output, it should display the information on terminal:
 
   ```Bash
   Parsing variants to CSV file
-  Parsing variants from /users/tz1/GATK4_Mutect2/<sample>.filtered1.vcf to CSV
+  Parsing variants from /users/tz1/git/GATK4/<sample>.filtered1.vcf to CSV
   START parsing VCF file
-  writing header to csv: /mnt/repository/Bioinformatics/tengyue_zheng_projects/GATK4_Mutect2/Mutect2_output_YYYYMMDD.csv
-  var imported from vcf: /users/tz1/GATK4_Mutect2/<sample>.filtered1.vcf
-  csv_output: /mnt/repository/Bioinformatics/tengyue_zheng_projects/GATK4_Mutect2/Mutect2_output_YYYYMMDD.csv
-  Parsing COMPLETE for /users/tz1/GATK4_Mutect2/<sample>.filtered1.vcf
+  writing header to csv: /mnt/bioinformatics/Bioinformatics/tengyue_zheng_projects/GATK4_Mutect2/Mutect2_output_YYYYMMDD.csv
+  var imported from vcf: /users/tz1/git/GATK4/<sample>.filtered1.vcf
+  csv_output: /mnt/bioinformatics/Bioinformatics/tengyue_zheng_projects/GATK4_Mutect2/Mutect2_output_YYYYMMDD.csv
+  Parsing COMPLETE for /users/tz1/git/GATK4/<sample>.filtered1.vcf
   ```
 
-  8. When the job is completed, check that log files have been generated.
+  1.7 When the job is completed, check that log files have been generated.
   
   If in doubt consult Tengyue Zheng or senior member of the bioinformatics team.
 
@@ -209,4 +214,83 @@
   $ less /users/tz1/<run_folder>/<sample>.filtered1.vcf.log
   $ less /users/tz1/<run_folder>/<sample>.log
   ```
-   You should see the outputs as above
+  You should see the outputs as above
+
+  2. Generate HaplotypeCaller VCFs
+  
+  2.1 Load dependencies
+
+  ```Bash
+  cd /users/tz1/git/GATK4/
+
+  module load apps/gatk/4.0.7.0/noarch
+  
+  ``` 
+  2.2 Test following script on a test bam file
+
+  ```Bash
+  nano GATK4_HaplotypeCaller_variant_calling.sh
+  ```
+  uncomment /users/tz1/git/GATK4/test_data/
+  comment /users/tz1/git/GATK4/MYH7
+
+  ```Bash
+  sh GATK_HaplotypeCaller_variant_calling.sh
+  ```
+  2.3 Check the VCF files generated
+
+  e.g. '*'.snps.indels.HaplotypeCaller.vcf and '*'.snps.indels.HaplotypeCaller.vcf.idx
+  
+  If the VCF files have the correct format and content, then perform the same step as step 2.2, EXCEPT uncomment data_dir="/users/tz1/git/GATK4/MYH7/"
+
+  2.4 Check the output, it should display the information on terminal:
+
+  ```Bash
+  variant calling /users/tz1/git/GATK4/test_data/test.bam using GATK4 haplotypecaller
+  Using GATK jar /opt/gridware/depots/c241921b/el7/pkg/apps/gatk/4.0.7.0/noarch/gatk-4.0.7.0/gatk-package-4.0.7.0-local.jar
+  Running:
+      java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx2g -Djava.io.tmpdir=/tmp -jar /opt/gridware/depots/c241921b/el7/pkg/apps/gatk/4.0.7.0/noarch/gatk-4.0.7.0/gatk-package-4.0.7.0-local.jar HaplotypeCaller -R /users/tz1/git/GATK4/refs/ucsc.hg19.HODS.fasta -L /mnt/lustre/references/targetedReseq/Cardiac/ALL/current/ALL.inhouse.bed -I /users/tz1/git/GATK4/test_data/test.bam -O /users/tz1/git/GATK4/test_data/test.snps.indels.haplotypeCaller.vcf
+  12:21:15.562 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/opt/gridware/depots/c241921b/el7/pkg/apps/gatk/4.0.7.0/noarch/gatk-4.0.7.0/gatk-package-4.0.7.0-local.jar!/com/intel/gkl/native/libgkl_compression.so
+  12:21:15.862 INFO  HaplotypeCaller - ------------------------------------------------------------
+  12:21:15.863 INFO  HaplotypeCaller - The Genome Analysis Toolkit (GATK) v4.0.7.0
+  12:21:15.863 INFO  HaplotypeCaller - For support and documentation go to https://software.broadinstitute.org/gatk/
+  12:21:15.863 INFO  HaplotypeCaller - Executing as tz1@login01.pri.nextgen3.alces.network on Linux v3.10.0-862.3.3.el7.x86_64 amd64
+  12:21:15.863 INFO  HaplotypeCaller - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_171-b10
+  12:21:15.863 INFO  HaplotypeCaller - Start Date/Time: 15 July 2020 12:21:15 BST
+  12:21:15.863 INFO  HaplotypeCaller - ------------------------------------------------------------
+  12:21:15.863 INFO  HaplotypeCaller - ------------------------------------------------------------
+  12:21:15.864 INFO  HaplotypeCaller - HTSJDK Version: 2.16.0
+  12:21:15.864 INFO  HaplotypeCaller - Picard Version: 2.18.7
+  12:21:15.864 INFO  HaplotypeCaller - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+  12:21:15.864 INFO  HaplotypeCaller - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+  12:21:15.864 INFO  HaplotypeCaller - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+  12:21:15.864 INFO  HaplotypeCaller - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+  12:21:15.864 INFO  HaplotypeCaller - Deflater: IntelDeflater
+  12:21:15.864 INFO  HaplotypeCaller - Inflater: IntelInflater
+  12:21:15.864 INFO  HaplotypeCaller - GCS max retries/reopens: 20
+  12:21:15.864 INFO  HaplotypeCaller - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+  12:21:15.864 INFO  HaplotypeCaller - Initializing engine
+  12:21:16.294 INFO  FeatureManager - Using codec BEDCodec to read file file:///mnt/lustre/references/targetedReseq/Cardiac/ALL/current/ALL.inhouse.bed
+  12:21:16.352 INFO  IntervalArgumentCollection - Processing 465036 bp from intervals
+  12:21:16.373 INFO  HaplotypeCaller - Done initializing engine
+  12:21:16.384 INFO  HaplotypeCallerEngine - Disabling physical phasing, which is supported only for reference-model confidence output
+  12:21:16.402 INFO  NativeLibraryLoader - Loading libgkl_utils.so from jar:file:/opt/gridware/depots/c241921b/el7/pkg/apps/gatk/4.0.7.0/noarch/gatk-4.0.7.0/gatk-package-4.0.7.0-local.jar!/com/intel/gkl/native/libgkl_utils.so
+  12:21:16.425 INFO  NativeLibraryLoader - Loading libgkl_pairhmm_omp.so from jar:file:/opt/gridware/depots/c241921b/el7/pkg/apps/gatk/4.0.7.0/noarch/gatk-4.0.7.0/gatk-package-4.0.7.0-local.jar!/com/intel/gkl/native/libgkl_pairhmm_omp.so
+  12:21:16.482 INFO  IntelPairHmm - Using CPU-supported AVX-512 instructions
+  12:21:16.482 WARN  IntelPairHmm - Flush-to-zero (FTZ) is enabled when running PairHMM
+  12:21:16.483 INFO  IntelPairHmm - Available threads: 2
+  12:21:16.483 INFO  IntelPairHmm - Requested threads: 4
+  12:21:16.483 WARN  IntelPairHmm - Using 2 available threads, but 4 were requested
+  12:21:16.483 INFO  PairHMM - Using the OpenMP multi-threaded AVX-accelerated native PairHMM implementation
+  12:21:16.630 INFO  ProgressMeter - Starting traversal
+  12:21:16.630 INFO  ProgressMeter -        Current Locus  Elapsed Minutes     Regions Processed   Regions/Minute
+  12:21:17.297 INFO  HaplotypeCaller - No reads filtered by: ((((((((MappingQualityReadFilter AND MappingQualityAvailableReadFilter) AND MappedReadFilter) AND NotSecondaryAlignmentReadFilter) AND NotDuplicateReadFilter) AND PassesVendorQualityCheckReadFilter) AND NonZeroReferenceLengthAlignmentReadFilter) AND GoodCigarReadFilter) AND WellformedReadFilter)
+  12:21:17.297 INFO  ProgressMeter -       chrX:135289125              0.0                  2154         193763.1
+  12:21:17.297 INFO  ProgressMeter - Traversal complete. Processed 2154 total regions in 0.0 minutes.
+  12:21:17.309 INFO  VectorLoglessPairHMM - Time spent in setup for JNI call : 0.0
+  12:21:17.309 INFO  PairHMM - Total compute time in PairHMM computeLogLikelihoods() : 0.0
+  12:21:17.309 INFO  SmithWatermanAligner - Total compute time in java Smith-Waterman : 0.00 sec
+  12:21:17.309 INFO  HaplotypeCaller - Shutting down engine
+  [15 July 2020 12:21:17 BST] org.broadinstitute.hellbender.tools.walkers.haplotypecaller.HaplotypeCaller done. Elapsed time: 0.03 minutes.
+  Runtime.totalMemory()=415760384
+  ```
